@@ -15,7 +15,7 @@ from utils.replay_buffer import ReplayBuffer
 class config():
     env_name           = "Pong-v0"
     record             = True
-    output_path        = "results/pong_dqn_cnn_1/"
+    output_path        = "results/pong_dqn_cnn_2/"
     model_output       = output_path + "model.weights/"
     log_path           = output_path + "log.txt"
     plot_output        = output_path + "scores.png"
@@ -41,6 +41,7 @@ class config():
     eps_end            = 0.1
     eps_nsteps         = 1000000
     learning_start     = 50000
+    soft_epsilon       = 0.05
 
 class DQN(object):
     def __init__(self, env, config):
@@ -222,7 +223,9 @@ class train_DQN(DQN):
             while True:
                 idx     = replay_buffer.store_frame(state)
                 q_input = replay_buffer.encode_recent_observation()
-                action = np.argmax(self.sess.run(self.q, feed_dict={self.s: [q_input]})[0])
+                action = self.env.action_space.sample()
+                if self.config.soft_epsilon < np.random.random():
+                    action = np.argmax(self.sess.run(self.q, feed_dict={self.s: [q_input]})[0])
                 new_state, reward, done, info = env.step(action)
                 replay_buffer.store_effect(idx, action, reward, done)
                 state = new_state
