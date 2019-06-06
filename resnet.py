@@ -8,8 +8,7 @@ import numpy as np
 import sys
 from gym import wrappers
 from collections import deque
-
-from utils.replay_buffer import ReplayBuffer
+from replay_buffer import ReplayBuffer
 
 class config():
     env_name           = "Pong-v0"
